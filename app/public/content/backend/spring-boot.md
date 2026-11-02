@@ -1598,26 +1598,6 @@ If you forget everything:
 
 </details>
 
-<details><summary style="font-size: 1.3em; font-weight: bold;">Explain dependency injection in Spring Boot.</summary>
-
-**Explanation:** Dependency injection is a design pattern where Spring manages object creation and injection of dependencies, promoting loose coupling.
-
-**Example:** Instead of `new UserService()`, Spring injects the service using @Autowired.
-
-**Real-time Example:** In an e-commerce app, OrderService gets injected with PaymentService and InventoryService automatically.
-
-</details>
-
-<details><summary style="font-size: 1.3em; font-weight: bold;">What is auto-configuration in Spring Boot?</summary>
-
-**Explanation:** Auto-configuration automatically configures beans based on classpath dependencies, reducing manual configuration.
-
-**Example:** Adding spring-boot-starter-data-jpa automatically configures DataSource, EntityManager, and repositories.
-
-**Real-time Example:** When building a REST API, adding the web starter automatically configures DispatcherServlet and JSON converters.
-
-</details>
-
 <details><summary style="font-size: 1.3em; font-weight: bold;">How does Spring Boot handle exception handling?</summary>
 
 **Explanation:** Spring Boot uses @ControllerAdvice for global exception handling, providing consistent error responses.
