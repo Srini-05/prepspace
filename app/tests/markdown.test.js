@@ -20,6 +20,12 @@ test('empty documents and nested deployment paths', () => {
   assert.throws(() => contentUrl('/content/../secret.md'))
 })
 
+test('question extraction preserves repeated disclosure text for duplicate detection', () => {
+  const result = analyzeMarkdown('<details><summary>1. What is Auto-Configuration?</summary>\n\nFirst answer.\n\n</details>\n\n<details><summary>What is auto-configuration?</summary>\n\nRepeated answer.\n\n</details>')
+  assert.deepEqual(result.questions, ['1. What is Auto-Configuration?', 'What is auto-configuration?'])
+  assert.deepEqual(analyzeMarkdown('# No questions').questions, [])
+})
+
 test('missing files and static hosting HTML fallbacks are rejected', async () => {
   const topic = { title: 'Test', file: '/content/test.md' }
   await assert.rejects(fetchMarkdown(topic, { fetcher: async () => new Response('missing', { status: 404 }) }))
