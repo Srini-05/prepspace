@@ -24,8 +24,10 @@ export function analyzeMarkdown(source) {
     .use(rehypeRaw).use(rehypeSanitize).use(rehypeSlug, { prefix: headingPrefix })
   const tree = processor.runSync(processor.parse(source))
   const headings = []
+  const questions = []
   const sections = [{ id: '', title: 'Introduction', content: '' }]
   visit(tree, (node) => {
+    if (node.type === 'element' && node.tagName === 'summary') questions.push(toText(node))
     if (node.type === 'element' && /^h[1-6]$/.test(node.tagName)) {
       const heading = { id: node.properties.id, title: toText(node), depth: Number(node.tagName[1]) }
       headings.push(heading)
@@ -36,6 +38,7 @@ export function analyzeMarkdown(source) {
   const text = toText(tree)
   return {
     headings,
+    questions,
     sections: sections.filter((section) => section.content.trim() || section.id),
     minutes: source.trim() ? Math.max(1, Math.ceil(text.trim().split(/\s+/).length / 220)) : 0,
   }
