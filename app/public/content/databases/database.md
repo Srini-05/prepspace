@@ -1309,13 +1309,13 @@ Say:
 
 </details>
 
-<details><summary style="font-size: 1.3em; font-weight: bold;">Explain ACID properties with examples.</summary>
+<details><summary style="font-size: 1.3em; font-weight: bold;">How do you test transaction atomicity during failures?</summary>
 
-**Explanation:** ACID ensures reliable transactions: Atomicity (all or nothing), Consistency (valid states), Isolation (independent transactions), Durability (persists after commit).
+**Explanation:** Inject a controlled failure between related writes in a real test database, then verify from a separate transaction that none of the incomplete changes were committed. Test the actual application transaction boundary, not only a mocked repository.
 
-**Example:** Bank transfer: Deduct from account A and add to B atomically; if failure, rollback both.
+**Example:** In a transfer test, debit account A and simulate a failure before crediting B. After rollback, both balances must match their starting values. A successful transfer must preserve the combined balance.
 
-**Real-time Example:** Online banking ensures money transfers are durable even if server crashes after commit.
+**Real-time Example:** A timeout after commit leaves the caller uncertain whether the transfer completed. Retry using a unique transfer ID enforced by the database and verify that the durable result is returned without applying the transfer twice.
 
 </details>
 
