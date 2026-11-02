@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test'
+import { topics } from '../../src/config/topics.js'
+import { projects } from '../../src/config/projects.js'
+
+const addedTopicIds = ['typescript', 'spring-security', 'rest-api-design', 'postgresql', 'docker', 'kubernetes', 'aws', 'git-github', 'low-level-design', 'software-testing', 'ci-cd', 'owasp-top-10', 'kafka', 'redis']
 
 const fixtures = [
   { id: 'reader-test', title: 'Reader test', category: 'Testing', description: 'Browser-only Markdown fixture', icon: 'Code2', file: '/content/reader-test.md' },
@@ -34,9 +38,10 @@ async function seed(page, { missing = true } = {}) {
 test('imported library, command shortcut, themes and persisted settings', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Your next interview starts here.' })).toBeVisible()
-  await expect(page.locator('.stat strong')).toHaveText(['14', '09', '00', '00'])
-  await expect(page.locator('.topic-card')).toHaveCount(14)
-  await expect(page.locator('.topic-card h3')).toContainText(['Linux Interview Preparation', 'AI + Software Engineering', 'Cybersecurity', 'Linux Networking', 'Distributed Systems', 'Ruby on Rails', 'System Design', 'Algorithms', 'Java Backend', 'Database', 'Frontend React', 'Microservices', 'OOPS', 'Spring Boot'])
+  const categoryCount = new Set(topics.map((topic) => topic.category)).size
+  await expect(page.locator('.stat strong')).toHaveText([String(topics.length).padStart(2, '0'), String(categoryCount).padStart(2, '0'), '00', '00'])
+  await expect(page.locator('.topic-card')).toHaveCount(topics.length)
+  await expect(page.locator('.topic-card h3')).toHaveText(topics.map((topic) => topic.title))
   await page.keyboard.press('Meta+k')
   await expect(page.getByRole('dialog')).toBeVisible()
   await expect(page.getByRole('combobox')).toBeFocused()
@@ -53,6 +58,34 @@ test('imported library, command shortcut, themes and persisted settings', async 
   await page.getByRole('button', { name: 'Reading settings' }).click()
   await expect(page.getByRole('combobox')).toHaveValue('wide')
   await expect(page.getByRole('switch')).toBeChecked()
+})
+
+test('creator projects and the shared footer work on desktop and mobile', async ({ page }) => {
+  for (const width of [1440, 375]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    const section = page.getByRole('region', { name: 'More by Srinivasan' })
+    await section.scrollIntoViewIfNeeded()
+    await expect(section.getByRole('article')).toHaveCount(3)
+    for (const project of projects) {
+      const link = section.getByRole('link', { name: `View ${project.title} project`, exact: true })
+      await expect(link).toHaveAttribute('href', project.url)
+      await expect(link).toHaveAttribute('target', '_blank')
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      await expect(section).toContainText(project.description)
+    }
+    const footer = page.getByRole('contentinfo', { name: 'Site footer' })
+    await footer.scrollIntoViewIfNeeded()
+    await expect(footer).toContainText('Made with love from Srinivasan')
+    await expect(footer.getByRole('navigation')).toHaveCount(3)
+    expect(await page.locator('#main-content').evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true)
+    await footer.getByRole('link', { name: 'Browse topics', exact: true }).click()
+    await expect(page).toHaveURL(/#\/topics$/)
+    await page.goto('/#/topic/typescript')
+    await expect(page.locator('.markdown-body')).toBeVisible()
+    await expect(footer).toHaveCount(1)
+    await expect(page.getByRole('region', { name: 'More by Srinivasan' })).toHaveCount(0)
+  }
 })
 
 test('real Markdown guides render and the Linux index navigates to its preserved relative guide', async ({ page }) => {
@@ -74,13 +107,26 @@ test('global search indexes real question-and-answer text', async ({ page }) => 
   await expect(page.locator('.search-result').filter({ hasText: 'Level 2: Scale, Availability, and Reliability' })).toBeVisible()
 })
 
-test('all fourteen imported Markdown topics load through the shared reader', async ({ page }) => {
-  const slugs = ['linux', 'ai-software-engineering', 'cybersecurity', 'networking', 'distributed-systems', 'ruby-rails', 'system-design', 'algorithm-interview-prep', 'java-backend', 'database', 'frontend-react', 'microservices', 'oops', 'backend-springboot']
-  for (const slug of slugs) {
-    await page.goto(`/#/topic/${slug}`)
+test('all registered Markdown topics load through the shared reader', async ({ page }) => {
+  for (const topic of topics) {
+    await page.goto(`/#/topic/${topic.id}`)
     await expect(page.locator('.markdown-body')).toBeVisible()
-    await expect(page.locator('.article-header h1')).not.toBeEmpty()
+    await expect(page.locator('.article-header h1')).toHaveText(topic.title)
     await expect(page.locator('.markdown-body h1').first()).toBeVisible()
+  }
+})
+
+test('new guides expose twelve expandable answers, practice labs and references', async ({ page }) => {
+  for (const id of addedTopicIds) {
+    await page.goto(`/#/topic/${id}`)
+    const disclosures = page.locator('.markdown-body details')
+    await expect(disclosures).toHaveCount(12)
+    await disclosures.first().locator('summary').click()
+    await expect(disclosures.first()).toHaveAttribute('open', '')
+    await expect(disclosures.first().getByText('Answer:', { exact: true })).toBeVisible()
+    await expect(page.locator('.markdown-body')).toContainText('Practice Lab')
+    await expect(page.locator('.markdown-body')).toContainText('Quick Revision')
+    await expect(page.locator('.markdown-body')).toContainText('References')
   }
 })
 
