@@ -5,6 +5,7 @@ import { PanelLeft, Search, Moon, Sun, SlidersHorizontal, ChevronRight, Command,
 import { useLibrary } from '../../hooks/useLibrary'
 import { IconButton, Modal } from '../common/Controls'
 import Sidebar from './Sidebar'
+import SiteFooter from './SiteFooter'
 
 const SearchDialog = lazy(() => import('../search/SearchDialog'))
 
@@ -32,7 +33,7 @@ export default function AppLayout() {
     </header>
     <aside className="desktop-sidebar" inert={collapsed}><Sidebar /></aside>
     <main id="main-content" tabIndex={-1} ref={mainRef} className="main-scroll">
-      <AnimatePresence mode="wait"><motion.div key={location.pathname} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="page"><Outlet context={{ scrollRef: mainRef }} /></motion.div></AnimatePresence>
+      <AnimatePresence mode="wait"><motion.div key={location.pathname} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="page"><div className="page-content"><Outlet context={{ scrollRef: mainRef }} /></div><SiteFooter /></motion.div></AnimatePresence>
     </main>
     <AnimatePresence>{mobileOpen && <Modal title="Workspace" className="mobile-drawer" onClose={() => setMobileOpen(false)}><Sidebar onNavigate={() => setMobileOpen(false)} /></Modal>}</AnimatePresence>
     {settingsOpen && <Modal title="Reading settings" onClose={() => setSettingsOpen(false)}><div className="settings-fields"><label>Text size <span>{preferences.fontSize}px</span><input type="range" min="15" max="21" step="2" value={preferences.fontSize} onChange={(event) => setPreferences((previous) => ({ ...previous, fontSize: Number(event.target.value) }))} /></label><label>Reading width<select value={preferences.width} onChange={(event) => setPreferences((previous) => ({ ...previous, width: event.target.value }))}><option value="standard">Standard</option><option value="wide">Wide</option></select></label><label className="toggle-row">Quick revision<input type="checkbox" role="switch" checked={preferences.revision} onChange={(event) => setPreferences((previous) => ({ ...previous, revision: event.target.checked }))} /></label></div></Modal>}
