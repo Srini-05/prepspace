@@ -361,9 +361,9 @@ The questions are grouped by learning level. Try to answer each question before 
 ## Level 5: Application Security (AppSec)
 
 <details>
-<summary>48. What is Application Security (AppSec)?</summary>
+<summary>48. How should an AppSec team prioritize and verify findings?</summary>
 
-**Answer:** AppSec is the practice of reducing risk in software across design, coding, dependencies, testing, deployment, and maintenance. It combines secure development practices with automated checks, human review, and a process to fix and verify findings.
+**Answer:** Prioritize findings using actual exposure, exploitability, affected data, business impact, and existing controls rather than scanner severity alone. Assign an owner and remediation target, verify the fix at the affected trust boundary, and add a regression check. Document accepted residual risk with an accountable decision-maker and a review date.
 
 </details>
 
