@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, ArrowUpRight, Search, Command, Library, Bookmark, Folder, Clock3, BookOpen, Dot } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Search, Command, Library, Bookmark, Folder, Clock3, BookOpen, ScrollText, Radar, Radio } from 'lucide-react'
 import { useLibrary } from '../../hooks/useLibrary'
 import { EmptyState, TopicIcon } from '../common/Controls'
+import { projects } from '../../config/projects'
+
+const projectIcons = { ScrollText, Radar, Radio }
 
 function TopicCard({ topic, index }) {
   const { documents } = useLibrary()
@@ -34,6 +37,9 @@ export default function HomePage({ view = 'home' }) {
       {displayed.length ? <div className="topic-grid">{displayed.map((topic, index) => <TopicCard key={topic.id} topic={topic} index={index} />)}</div> : <div className="library-empty"><span className="empty-corner top-left" /><span className="empty-corner bottom-right" /><EmptyState icon={BookOpen} title={topics.length ? view === 'recent' ? 'A fresh start' : 'No matching topics' : 'Your next chapter is unwritten'} detail={topics.length ? view === 'recent' ? 'No topics opened yet.' : 'Try a different title or category.' : 'No topics in your library yet.'} /><span className="empty-footnote">{topics.length ? 'YOUR PERSONAL KNOWLEDGE LIBRARY' : '0 TOPICS · ENDLESS POSSIBILITIES'}</span></div>}
     </section>
     {view === 'home' && recentTopics.length > 0 && <section className="recent-section"><div className="section-heading"><h2>Recently viewed</h2><Link to="/recent" className="text-link">View history <ArrowUpRight size={14} /></Link></div>{recentTopics.slice(0, 3).map((topic) => <Link className="recent-row" to={`/topic/${topic.id}`} key={topic.id}><TopicIcon name={topic.icon} size={17} /><span>{topic.title}</span><small>{new Date(topic.openedAt).toLocaleDateString()}</small><ArrowUpRight size={15} /></Link>)}</section>}
-    <footer className="page-footer"><span>Built for your next breakthrough.</span><span><Dot size={16} /> Your space. Your pace.</span></footer>
+    {view === 'home' && <section className="creator-projects" aria-labelledby="creator-projects-heading"><div className="section-heading"><h2 id="creator-projects-heading">More by Srinivasan</h2><a className="text-link" href="https://github.com/Srini-05" target="_blank" rel="noopener noreferrer">Explore GitHub<ArrowUpRight size={14} aria-hidden="true" /></a></div><div className="creator-project-grid">{projects.map((project) => {
+      const Icon = projectIcons[project.icon]
+      return <article className="creator-project" key={project.url}><Icon size={22} aria-hidden="true" /><p className="project-category">{project.category}</p><h3>{project.title}</h3><p className="project-description">{project.description}</p><a href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`View ${project.title} project`}>View project<ArrowUpRight size={15} aria-hidden="true" /></a></article>
+    })}</div></section>}
   </div>
 }
