@@ -2,11 +2,15 @@
 
 **Your knowledge. Your preparation. Your next breakthrough.**
 
-PrepSpace is a static, searchable interview-preparation library. It brings 14 Markdown guides into one responsive React experience with a shared reader, table of contents, bookmarks, reading progress, code copying, and quick revision.
+PrepSpace is a static, searchable interview-preparation library. It brings 28 Markdown guides into one responsive React experience with a shared reader, table of contents, bookmarks, reading progress, code copying, and quick revision.
 
 ## Topics
 
 Algorithms, Java Backend, Spring Boot, Frontend React, Database, Microservices, Distributed Systems, System Design, OOPS, Linux, Networking, Cybersecurity, Ruby on Rails, and AI + Software Engineering.
+
+Additional focused guides cover TypeScript, Spring Security, REST API Design, PostgreSQL, Docker, Kubernetes, AWS, Git & GitHub, Low-Level Design, Software Testing, CI/CD, OWASP Top 10 (2025 edition), Kafka, and Redis. Each includes expandable interview questions, examples, a practice lab, quick revision, and references.
+
+Existing Algorithms, System Design, and AI + Software Engineering guides cover the requested Data Structures & Algorithms, High-Level System Design, and AI Engineering subjects respectively; they are not duplicated.
 
 ## Repository Layout
 
